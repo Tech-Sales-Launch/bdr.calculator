@@ -1,0 +1,337 @@
+<section class="earnings-calc" aria-label="Earnings Projection">
+  <style>
+    .earnings-calc, .earnings-calc * { box-sizing: border-box; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+
+    /* Container */
+    .earnings-calc { width: 100vw; margin-left: calc(-50vw + 50%); background:#0a0c10; color:#e9eef7; padding: clamp(28px,5vw,56px) 16px; }
+    .ec-inner { max-width: 1100px; margin: 0 auto; }
+
+    /* Headings and copy */
+    .ec-title { font-weight: 800; font-size: clamp(26px,4.8vw,40px); margin: 0 0 12px; text-align: center; color:#fff; }
+    .ec-desc { font-size: clamp(16px,2.4vw,18px); line-height: 1.75; color: #cdd7ea; margin: 0 0 24px; text-align: center; }
+
+    /* Grid for inputs */
+    .ec-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; margin-bottom: 16px; }
+    .ec-field label { display: block; font-size: 14px; color: #b9c6e2; margin-bottom: 8px; font-weight: 600; }
+    .ec-field input {
+      width: 100%; padding: 14px 16px; font-size: 16px; border-radius: 12px;
+      border: 1px solid #1f2a37; background: #0f141a; color:#e9eef7;
+      outline: none; transition: box-shadow .2s ease, border-color .2s ease;
+    }
+    .ec-field input::placeholder { color:#7b8aa3; }
+    .ec-field input:focus { border-color:#8aa5ff; box-shadow: 0 0 0 4px rgba(138,165,255,.15); }
+
+    /* Actions */
+    .ec-actions { display: flex; gap: 12px; align-items: center; justify-content: center; margin-bottom: 18px; }
+    .ec-btn{
+      padding: 14px 22px; border-radius: 14px; border: 1px solid #8aa5ff; background: #8aa5ff;
+      color: #0a0c10; cursor: pointer; font-weight: 800; font-size: 16px;
+      transition: transform .06s ease, box-shadow .2s ease, background .2s ease, color .2s ease;
+      box-shadow: 0 8px 28px rgba(138,165,255,.35);
+    }
+    .ec-btn:hover{ transform: translateY(-1px); box-shadow: 0 12px 32px rgba(138,165,255,.45); }
+    .ec-btn.secondary{
+      background: transparent; color:#8aa5ff; border-color:#8aa5ff; box-shadow:none;
+    }
+    .ec-btn.secondary:hover{ background: rgba(138,165,255,.08); }
+
+    /* Table */
+    .ec-table-wrap { width: 100%; overflow-x: auto; margin-top: 20px; display: none; }
+    .ec-table { width: 100%; border-collapse: collapse; min-width: 900px; background:#0f141a; border:1px solid #1f2a37; border-radius: 14px; overflow: hidden; }
+    .ec-table th, .ec-table td {
+      padding: 14px 16px; border-bottom: 1px solid #1f2a37; text-align: right; white-space: nowrap; font-size: 16px;
+    }
+    .ec-table th { background:#121923; color:#cdd7ea; font-weight: 700; }
+    .ec-table td { color:#e9eef7; }
+    .ec-table th:first-child, .ec-table td:first-child { text-align: left; }
+    .ec-table tr:last-child td { border-bottom: none; }
+
+    /* Summary pills */
+    .ec-sum { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 16px; padding-top: 16px; }
+    .ec-pill {
+      background: #101722; border: 1px solid #1f2a37; border-radius: 14px;
+      padding: 14px 16px; font-size: 16px; text-align: center; color:#dbe5f6;
+    }
+    .ec-strong { font-weight: 800; color:#fff; }
+    .ec-pill.accent {
+      background: rgba(34,197,94,.12);
+      border-color: rgba(34,197,94,.35);
+      box-shadow: 0 8px 28px rgba(34,197,94,.15), inset 0 0 0 1px rgba(34,197,94,.15);
+      backdrop-filter: saturate(120%);
+    }
+    .ec-amount { font-weight: 900; color: #86efac; text-shadow: 0 0 10px rgba(34,197,94,.35); }
+
+    /* Early-start block */
+    .ec-early { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; padding-top: 16px; }
+    .ec-pill.note { background: #0f141a; border-color:#1f2a37; color:#cdd7ea; }
+
+    /* Responsive */
+    @media (max-width: 980px) {
+      .ec-grid { grid-template-columns: 1fr; }
+      .ec-table { min-width: 100%; }
+      .ec-sum { grid-template-columns: 1fr; }
+      .ec-early { grid-template-columns: 1fr; }
+    }
+  </style>
+
+  <div class="ec-inner">
+    <h2 class="ec-title">Simple Tech Sales Earnings Calculator</h2>
+    <p class="ec-desc">
+      Compare a typical tech sales path with your current career at the five, ten, fifteen, twenty, and twenty five year marks. The baseline switches as follows: Years 1 to 4 compare to Current Salary, Years 5 to 10 compare to your five year salary, Years 11 to 15 compare to your ten year salary, Years 16 to 20 compare to your ten year salary, Years 21 to 25 compare to your ten year salary. Urgency metrics show the extra dollars if you start the same tech path earlier by one, three, six, or twelve months, standardized for everyone.
+    </p>
+
+    <div class="ec-grid">
+      <div class="ec-field">
+        <label for="ec-current">Current salary</label>
+        <input id="ec-current" type="number" min="0" step="1000" placeholder="e.g., 80000" />
+      </div>
+      <div class="ec-field">
+        <label for="ec-y5">Projected salary in 5 years</label>
+        <input id="ec-y5" type="number" min="0" step="1000" placeholder="e.g., 100000" />
+      </div>
+      <div class="ec-field">
+        <label for="ec-y10">Projected salary in 10 years</label>
+        <input id="ec-y10" type="number" min="0" step="1000" placeholder="e.g., 125000" />
+      </div>
+    </div>
+
+    <div class="ec-actions">
+      <button class="ec-btn" id="ec-calc" type="button">Calculate</button>
+      <button class="ec-btn secondary" id="ec-reset" type="button">Reset</button>
+    </div>
+
+    <div class="ec-table-wrap" id="ec-wrap">
+      <table class="ec-table" id="ec-table" aria-live="polite">
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Role assumption</th>
+            <th>Annual earnings</th>
+            <th>Annual increase vs baseline</th>
+            <th>Cumulative increase vs baseline</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="ec-sum" style="margin-top:16px;">
+        <div class="ec-pill accent">
+          <span class="ec-strong">5-year increase:</span>
+          <span id="ec-total-5" class="ec-amount">$0</span>
+        </div>
+        <div class="ec-pill accent">
+          <span class="ec-strong">10-year increase:</span>
+          <span id="ec-total-10" class="ec-amount">$0</span>
+        </div>
+        <div class="ec-pill accent">
+          <span class="ec-strong">15-year increase:</span>
+          <span id="ec-total-15" class="ec-amount">$0</span>
+        </div>
+        <div class="ec-pill accent">
+          <span class="ec-strong">20-year increase:</span>
+          <span id="ec-total-20" class="ec-amount">$0</span>
+        </div>
+        <div class="ec-pill accent">
+          <span class="ec-strong">25-year increase:</span>
+          <span id="ec-total-25" class="ec-amount">$0</span>
+        </div>
+      </div>
+
+      <div class="ec-early" style="margin-top:16px;">
+        <div class="ec-pill note">
+          <span class="ec-strong">Start 1 month earlier:</span>
+          <span id="ec-early-1" class="ec-amount">$0</span>
+        </div>
+        <div class="ec-pill note">
+          <span class="ec-strong">Start 3 months earlier:</span>
+          <span id="ec-early-3" class="ec-amount">$0</span>
+        </div>
+        <div class="ec-pill note">
+          <span class="ec-strong">Start 6 months earlier:</span>
+          <span id="ec-early-6" class="ec-amount">$0</span>
+        </div>
+        <div class="ec-pill note">
+          <span class="ec-strong">Start 1 year earlier:</span>
+          <span id="ec-early-12" class="ec-amount">$0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      /* Tech path by year, through 25 */
+      const tech = [
+        null,
+        { role: "BDR", amt: 75000 },
+        { role: "SMB AE promotion mid year", amt: 100000 },
+        { role: "SMB AE", amt: 120000 },
+        { role: "SMB AE", amt: 120000 },
+        { role: "Mid-Market AE", amt: 150000 },
+        { role: "Mid-Market AE", amt: 150000 },
+        { role: "Mid-Market AE", amt: 150000 },
+        { role: "Enterprise AE", amt: 180000 },
+        { role: "Enterprise AE", amt: 180000 },
+        { role: "Enterprise AE", amt: 200000 },
+        { role: "Enterprise AE", amt: 250000 },
+        { role: "Enterprise AE", amt: 250000 },
+        { role: "Enterprise AE", amt: 250000 },
+        { role: "Enterprise AE", amt: 250000 },
+        { role: "Enterprise AE", amt: 250000 },
+        { role: "Enterprise AE", amt: 300000 },
+        { role: "Enterprise AE", amt: 300000 },
+        { role: "Enterprise AE", amt: 300000 },
+        { role: "Enterprise AE", amt: 300000 },
+        { role: "Enterprise AE", amt: 300000 },
+        { role: "Enterprise AE", amt: 350000 },
+        { role: "Enterprise AE", amt: 350000 },
+        { role: "Enterprise AE", amt: 350000 },
+        { role: "Enterprise AE", amt: 350000 },
+        { role: "Enterprise AE", amt: 350000 }
+      ];
+
+      const el = {
+        current: document.getElementById("ec-current"),
+        y5: document.getElementById("ec-y5"),
+        y10: document.getElementById("ec-y10"),
+        tableBody: document.querySelector("#ec-table tbody"),
+        t5: document.getElementById("ec-total-5"),
+        t10: document.getElementById("ec-total-10"),
+        t15: document.getElementById("ec-total-15"),
+        t20: document.getElementById("ec-total-20"),
+        t25: document.getElementById("ec-total-25"),
+        early1: document.getElementById("ec-early-1"),
+        early3: document.getElementById("ec-early-3"),
+        early6: document.getElementById("ec-early-6"),
+        early12: document.getElementById("ec-early-12"),
+        calc: document.getElementById("ec-calc"),
+        reset: document.getElementById("ec-reset"),
+        wrap: document.getElementById("ec-wrap")
+      };
+
+      function fmt(n) {
+        return n.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+      }
+
+      /* Baseline stages per your rules */
+      function buildBaselineAnnuals() {
+        let c = Number(el.current.value || NaN);
+        let y5 = Number(el.y5.value || NaN);
+        let y10 = Number(el.y10.value || NaN);
+        if (isNaN(c)) c = 0;
+        if (isNaN(y5)) y5 = c;
+        if (isNaN(y10)) y10 = y5;
+
+        const base = [null];
+        for (let y = 1; y <= 4; y++) base[y] = c;
+        for (let y = 5; y <= 10; y++) base[y] = y5;
+        for (let y = 11; y <= 15; y++) base[y] = y10;
+        for (let y = 16; y <= 20; y++) base[y] = y10;
+        for (let y = 21; y <= 25; y++) base[y] = y10;
+        return base;
+      }
+
+      /* Expand annuals to monthly series */
+      function expandAnnualToMonthly(annuals, years) {
+        const monthly = [];
+        for (let y = 1; y <= years; y++) {
+          const amt = annuals[y] || 0;
+          const mVal = amt / 12;
+          for (let m = 0; m < 12; m++) monthly.push(mVal);
+        }
+        return monthly;
+      }
+
+      /* Urgency: value of starting the same tech path earlier over 25 years */
+      function computeEarlyValue(techMonthly, deltaMonths) {
+        const n = 25 * 12;
+        const lastVal = techMonthly[techMonthly.length - 1] || 0;
+        let sum = 0;
+        for (let i = 0; i < n; i++) {
+          const earlier = (i + deltaMonths < techMonthly.length) ? techMonthly[i + deltaMonths] : lastVal;
+          const statusQuo = techMonthly[i];
+          sum += (earlier - statusQuo);
+        }
+        return sum;
+      }
+
+      function render() {
+        const baseAnnuals = buildBaselineAnnuals();
+        const techAnnuals = tech.map((t, idx) => (idx === 0 ? null : t.amt));
+
+        const baseMonthly = expandAnnualToMonthly(baseAnnuals, 25);
+        const techMonthly = expandAnnualToMonthly(techAnnuals, 25);
+
+        const tbody = el.tableBody;
+        tbody.innerHTML = "";
+        let cumIncrease = 0, total5 = 0, total10 = 0, total15 = 0, total20 = 0, total25 = 0;
+
+        for (let year = 1; year <= 25; year++) {
+          const tAmt = techAnnuals[year] ?? 0;
+          const bAmt = baseAnnuals[year] ?? 0;
+          const annualIncrease = tAmt - bAmt;
+          cumIncrease += annualIncrease;
+
+          if (year <= 5) total5 += annualIncrease;
+          if (year <= 10) total10 += annualIncrease;
+          if (year <= 15) total15 += annualIncrease;
+          if (year <= 20) total20 += annualIncrease;
+          if (year <= 25) total25 += annualIncrease;
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>Year ${year}</td>
+            <td>${tech[year].role}</td>
+            <td>${fmt(tAmt)}</td>
+            <td>${fmt(annualIncrease)}</td>
+            <td>${fmt(cumIncrease)}</td>
+          `;
+          tbody.appendChild(tr);
+        }
+
+        el.t5.textContent = fmt(total5);
+        el.t10.textContent = fmt(total10);
+        el.t15.textContent = fmt(total15);
+        el.t20.textContent = fmt(total20);
+        el.t25.textContent = fmt(total25);
+
+        // Urgency metrics based only on tech path
+        el.early1.textContent = fmt(computeEarlyValue(techMonthly, 1));
+        el.early3.textContent = fmt(computeEarlyValue(techMonthly, 3));
+        el.early6.textContent = fmt(computeEarlyValue(techMonthly, 6));
+        el.early12.textContent = fmt(computeEarlyValue(techMonthly, 12));
+
+        el.wrap.style.display = "block";
+      }
+
+      el.calc.addEventListener("click", render);
+
+      // Optional live update while typing
+      ["ec-current","ec-y5","ec-y10"].forEach(id => {
+        const input = document.getElementById(id);
+        input.addEventListener("input", () => {
+          if (el.current.value || el.y5.value || el.y10.value) render();
+        });
+      });
+
+      el.reset.addEventListener("click", () => {
+        el.current.value = "";
+        el.y5.value = "";
+        el.y10.value = "";
+        el.tableBody.innerHTML = "";
+        el.t5.textContent = "$0";
+        el.t10.textContent = "$0";
+        el.t15.textContent = "$0";
+        el.t20.textContent = "$0";
+        el.t25.textContent = "$0";
+        el.early1.textContent = "$0";
+        el.early3.textContent = "$0";
+        el.early6.textContent = "$0";
+        el.early12.textContent = "$0";
+        el.wrap.style.display = "none";
+      });
+
+      el.wrap.style.display = "none";
+    })();
+  </script>
+</section>
